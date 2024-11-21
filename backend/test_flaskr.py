@@ -61,6 +61,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
         self.assertTrue(data['success'])
 
+    def test_404_get_questions_by_invalid_category(self):
+        """Test 404 error for requesting questions from an invalid category"""
+        response = self.client.get('/categories/999/questions')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'resource not found')
+
     def test_get_questions(self):
         """Test retrieving paginated questions"""
         with self.app.app_context():
@@ -84,6 +93,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['questions'])
         self.assertTrue(data['total_questions'])
         self.assertTrue(data['categories'])
+
+    def test_404_get_questions_beyond_valid_page(self):
+        """Test 404 error for requesting questions beyond valid page number"""
+        response = self.client.get('/questions?page=1000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'resource not found')
 
     def test_delete_question(self):
         """Test deleting a question"""
@@ -110,6 +128,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['success'])
         self.assertEqual(data['deleted'], question_id)
 
+    def test_404_delete_nonexistent_question(self):
+        """Test 404 error for attempting to delete a nonexistent question"""
+        response = self.client.delete('/questions/1000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'resource not found')
+
     def test_create_question(self):
         """Test creating a new question"""
         response = self.client.post('/questions', json=self.new_question)
@@ -118,6 +145,18 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue(data['created'])
+
+    def test_422_create_question_with_incomplete_data(self):
+        """Test 422 error for creating a question with incomplete data"""
+        response = self.client.post('/questions', json={
+            "question": "What is Python?",
+            "answer": ""
+        })
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'unprocessable entity')
 
     def test_search_questions(self):
         """Test searching for questions"""
@@ -141,6 +180,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(data['questions'])
         self.assertTrue(data['total_questions'])
+
+    def test_422_search_questions_with_empty_search_term(self):
+        """Test 422 error for searching questions with an empty search term"""
+        response = self.client.post('/questions/search', json={'searchTerm': ''})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'unprocessable entity')
 
     def test_get_questions_by_category(self):
         """Test retrieving questions by category"""
@@ -202,6 +250,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(data['question'])
 
+    def test_422_play_quiz_with_invalid_data(self):
+        """Test 422 error for playing quiz with invalid data"""
+        response = self.client.post('/quizzes', json={})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'unprocessable entity')
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
