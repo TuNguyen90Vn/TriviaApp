@@ -38,14 +38,15 @@ def create_app(test_config=None):
 
     @app.route('/categories', methods=['GET'])
     def get_categories():
-        categories = Category.query.all()
-        if not categories:
+        try:
+            categories = Category.query.all()
+            formatted_categories = {category.id: category.type for category in categories}
+            return jsonify({
+                'success': True,
+                'categories': formatted_categories
+            })
+        except:
             abort(404)
-        formatted_categories = {category.id: category.type for category in categories}
-        return jsonify({
-            'success': True,
-            'categories': formatted_categories
-        })
 
 
     @app.route('/questions', methods=['GET'])
@@ -96,8 +97,9 @@ def create_app(test_config=None):
                 category=category, difficulty=difficulty
             )
             question.insert()
-            return jsonify({'success': True, 'created': question.id})
-        except:
+            return jsonify({'success': True, 'created': question.id}), 201
+        except Exception as e:
+            print(e)
             abort(422)
 
 

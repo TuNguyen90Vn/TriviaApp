@@ -3,17 +3,22 @@ import json
 from flaskr import create_app
 from models import db, Question, Category
 from sqlalchemy import text
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
 
 class TriviaTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
 
     def setUp(self):
         """Define test variables and initialize app."""
-        self.database_name = "trivia_test"
-        self.database_user = "student"
-        self.database_password = "student"
-        self.database_host = "localhost:5432"
+        # Load database configuration from environment variables
+        self.database_name = os.getenv('DATABASE_NAME_TEST')
+        self.database_user = os.getenv('DATABASE_USER')
+        self.database_password = os.getenv('DATABASE_PASSWORD')
+        self.database_host = os.getenv('DATABASE_HOST')
         self.database_path = f"postgresql://{self.database_user}:{self.database_password}@{self.database_host}/{self.database_name}"
 
         # Create app with the test configuration
@@ -142,7 +147,7 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client.post('/questions', json=self.new_question)
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertTrue(data['success'])
         self.assertTrue(data['created'])
 
