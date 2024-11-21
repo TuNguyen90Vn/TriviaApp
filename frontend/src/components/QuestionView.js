@@ -21,8 +21,9 @@ class QuestionView extends Component {
   }
 
   getQuestions = () => {
+    // Updated API endpoint for fetching questions with pagination
     $.ajax({
-      url: `/questions?page=${this.state.page}`, //TODO: update request URL
+      url: `/questions?page=${this.state.page}`,
       type: 'GET',
       success: (result) => {
         this.setState({
@@ -40,32 +41,10 @@ class QuestionView extends Component {
     });
   };
 
-  selectPage(num) {
-    this.setState({ page: num }, () => this.getQuestions());
-  }
-
-  createPagination() {
-    let pageNumbers = [];
-    let maxPage = Math.ceil(this.state.totalQuestions / 10);
-    for (let i = 1; i <= maxPage; i++) {
-      pageNumbers.push(
-        <span
-          key={i}
-          className={`page-num ${i === this.state.page ? 'active' : ''}`}
-          onClick={() => {
-            this.selectPage(i);
-          }}
-        >
-          {i}
-        </span>
-      );
-    }
-    return pageNumbers;
-  }
-
   getByCategory = (id) => {
+    // Updated API endpoint for fetching questions by category
     $.ajax({
-      url: `/categories/${id}/questions`, //TODO: update request URL
+      url: `/categories/${id}/questions`,
       type: 'GET',
       success: (result) => {
         this.setState({
@@ -83,8 +62,9 @@ class QuestionView extends Component {
   };
 
   submitSearch = (searchTerm) => {
+    // Updated API endpoint for searching questions
     $.ajax({
-      url: `/questions`, //TODO: update request URL
+      url: `/questions/search`,
       type: 'POST',
       dataType: 'json',
       contentType: 'application/json',
@@ -110,15 +90,16 @@ class QuestionView extends Component {
 
   questionAction = (id) => (action) => {
     if (action === 'DELETE') {
-      if (window.confirm('are you sure you want to delete the question?')) {
+      if (window.confirm('Are you sure you want to delete the question?')) {
+        // Updated API endpoint for deleting a question
         $.ajax({
-          url: `/questions/${id}`, //TODO: update request URL
+          url: `/questions/${id}`,
           type: 'DELETE',
           success: (result) => {
             this.getQuestions();
           },
           error: (error) => {
-            alert('Unable to load questions. Please try your request again');
+            alert('Unable to delete the question. Please try your request again');
             return;
           },
         });

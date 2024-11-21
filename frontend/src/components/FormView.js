@@ -15,8 +15,9 @@ class FormView extends Component {
   }
 
   componentDidMount() {
+    // Updated API endpoint for fetching categories
     $.ajax({
-      url: `/categories`, //TODO: update request URL
+      url: `/categories`,
       type: 'GET',
       success: (result) => {
         this.setState({ categories: result.categories });
@@ -31,8 +32,9 @@ class FormView extends Component {
 
   submitQuestion = (event) => {
     event.preventDefault();
+    // Updated API endpoint for submitting questions
     $.ajax({
-      url: '/questions', //TODO: update request URL
+      url: '/questions',
       type: 'POST',
       dataType: 'json',
       contentType: 'application/json',

@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
 database_name = 'trivia'
-database_user = 'postgres'
-database_password = 'password'
+database_user = 'student'
+database_password = 'student'
 database_host = 'localhost:5432'
 database_path = f'postgresql://{database_user}:{database_password}@{database_host}/{database_name}'
 
@@ -67,8 +67,13 @@ class Category(db.Model):
     def __init__(self, type):
         self.type = type
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
     def format(self):
         return {
             'id': self.id,
             'type': self.type
         }
+

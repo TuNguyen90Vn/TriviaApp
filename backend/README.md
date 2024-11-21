@@ -71,6 +71,7 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 You will need to provide detailed documentation of your API endpoints including the URL, request parameters, and the response body. Use the example below as a reference.
 
+
 ### Documentation Example
 
 `GET '/api/v1.0/categories'`
@@ -102,3 +103,294 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+
+## API Documentation
+### Base URL
+The API is hosted locally on http://127.0.0.1:5000/. All endpoints are relative to this URL.
+
+-----------
+
+#### Endpoints
+1. **GET** `/api/v1.0/categories`
+**Description**: Fetches a dictionary of categories, where the keys are the IDs, and the values are the corresponding category strings.
+
+**Request Arguments**: None
+**Response:**
+
+- Status Code: `200 OK`
+- Body:
+```json
+{
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+    }
+}
+```
+**Error Handling:**
+
+- Status Code: `404 Not Found`
+- Body:
+```json
+{
+    "success": false,
+    "error": 404,
+    "message": "resource not found"
+}
+```
+
+-----------
+
+2. **GET** `/api/v1.0/questions`
+**Description**: Fetches paginated questions, including the total number of questions, all categories, and the current category.
+
+**Request Arguments:**
+
+- `page` (optional, integer): The page number to fetch.
+**Response:**
+
+- Status Code: `200 OK`
+- Body:
+
+```json
+{
+    "questions": [
+        {
+            "id": 1,
+            "question": "What is the capital of France?",
+            "answer": "Paris",
+            "category": "3",
+            "difficulty": 2
+        },
+        {
+            "id": 2,
+            "question": "What is the largest planet in our solar system?",
+            "answer": "Jupiter",
+            "category": "1",
+            "difficulty": 3
+        }
+    ],
+    "total_questions": 2,
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography"
+    },
+    "current_category": null
+}
+```
+
+**Error Handling:**
+
+- Status Code: `404 Not Found` (Invalid page number)
+- Body:
+
+```json
+{
+    "success": false,
+    "error": 404,
+    "message": "resource not found"
+}
+```
+
+-----------
+
+3. **DELETE** `/api/v1.0/questions/<int:question_id>`
+**Description**: Deletes a question by its ID.
+
+**Request Arguments:**
+
+- `question_id` (required, integer): The ID of the question to delete.
+**Response:**
+
+- Status Code: `200 OK`
+- Body:
+
+```json
+{
+    "success": true,
+    "deleted": 1
+}
+```
+
+**Error Handling:**
+
+- Status Code: `404 Not Found` (Question does not exist)
+- Body:
+
+```json
+{
+    "success": false,
+    "error": 404,
+    "message": "resource not found"
+}
+```
+
+-----------
+
+4. **POST** `/api/v1.0/questions`
+**Description**: Adds a new question.
+
+**Request Body:**
+
+```json
+{
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "category": "3",
+    "difficulty": 2
+}
+```
+
+**Response:**
+
+- Status Code: `200 OK`
+- Body:
+
+```json
+{
+    "success": true,
+    "created": 10
+}
+```
+
+**Error Handling:**
+
+- Status Code: `422 Unprocessable Entity` (Missing required fields)
+- Body:
+
+```json
+{
+    "success": false,
+    "error": 422,
+    "message": "unprocessable entity"
+}
+```
+
+-----------
+
+5. **POST** `/api/v1.0/questions/search`
+**Description**: Searches for questions based on a search term.
+
+**Request Body:**
+
+```json
+{
+    "searchTerm": "capital"
+}
+```
+
+**Response:**
+
+- Status Code: `200 OK`
+- Body:
+
+```json
+{
+    "questions": [
+        {
+            "id": 1,
+            "question": "What is the capital of France?",
+            "answer": "Paris",
+            "category": "3",
+            "difficulty": 2
+        }
+    ],
+    "total_questions": 1,
+    "current_category": null
+}
+```
+
+-----------
+
+6. **GET** `/api/v1.0/categories/<int:category_id>/questions`
+**Description:** Fetches all questions for a specific category.
+
+**Request Arguments:**
+
+- `category_id` (required, integer): The ID of the category.
+**Response:**
+
+- Status Code: `200 OK`
+- Body:
+
+```json
+{
+    "questions": [
+        {
+            "id": 1,
+            "question": "What is the capital of France?",
+            "answer": "Paris",
+            "category": "3",
+            "difficulty": 2
+        }
+    ],
+    "total_questions": 1,
+    "current_category": 3
+}
+```
+
+**Error Handling:**
+
+- Status Code: `404 Not Found` (Category does not exist)
+- Body:
+
+```json
+{
+    "success": false,
+    "error": 404,
+    "message": "resource not found"
+}
+```
+
+-----------
+
+7. **POST** `/api/v1.0/quizzes`
+**Description**: Fetches a random question to play a quiz.
+
+**Request Body:**
+
+```json
+{
+    "previous_questions": [1, 2],
+    "quiz_category": {
+        "id": "3"
+    }
+}
+```
+
+**Response:**
+
+- Status Code: `200 OK`
+- Body:
+
+```json
+{
+    "success": true,
+    "question": {
+        "id": 3,
+        "question": "What is the capital of Germany?",
+        "answer": "Berlin",
+        "category": "3",
+        "difficulty": 2
+    }
+}
+```
+
+**Error Handling:**
+
+- Status Code: `422 Unprocessable Entity` (Invalid request data)
+- Body:
+
+```json
+{
+    "success": false,
+    "error": 422,
+    "message": "unprocessable entity"
+}
+```
+
